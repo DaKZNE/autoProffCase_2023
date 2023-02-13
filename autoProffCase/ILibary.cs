@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace autoProffCase
 {
-    interface ILibary
+    interface iLibary
     {
-        List<Book> FindBooks(string searchString);
+        Index FindBooks(string searchString);
+
+        Shelf InsertBooks(List<ShelfSlot> book, int shelf);
+
     }
 }

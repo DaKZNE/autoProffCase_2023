@@ -137,9 +137,10 @@ namespace AutoPROFFTestProject
             Book book1 = new Book(bookAuthor1, title1, publisher1, published1, numberOfPages1);
             Book book2 = new Book(bookAuthor2, title2, publisher2, published2, numberOfPages2);
 
-            Libary libary = new Libary(new List<Book>()
+            Shelf libary = new Shelf(1,new List<ShelfSlot>()
             {
-                book1, book2
+                
+                new ShelfSlot(book1, 4832), new ShelfSlot(book2, 8945)
             });
 
             //Act
@@ -147,14 +148,95 @@ namespace AutoPROFFTestProject
 
             //List<Book> bookResult1 = libary.FindBooks("*20*");
 
-            List<Book> bookResult2 = libary.FindBooks("*20* & *Peter*");
+            List<ShelfSlot> bookResult2 = libary.FindBooks("*20* & *Peter*");
 
             //Assert
             //Assert.AreEqual((int)bookResult1.Count, 2, "Find books didn't find the correct amount of books. Expected amount is 2");
-            Assert.AreEqual((int)bookResult2.Count, 1, "Find books didn't find the correct amount of books. Expected amount is 1");
+            Assert.AreEqual(bookResult2.Count, 1, "Find books didn't find the correct amount of books. Expected amount is 1");
             //Assert.AreEqual(((Book)bookResult1[0]).Title, title1, "Could not find the title in the returned data of search 1");
-            Assert.AreEqual(((Book)bookResult2[0]).Title, title2, "Could not find the title in the returned data of search 2");
+            Assert.AreEqual(bookResult2[0].book.Title, title2, "Could not find the title in the returned data of search 2");
 
+
+        }
+
+        #endregion
+
+
+        #region Exercise 1.3
+        [TestMethod]
+        public void Find_LibaryBooks()
+        {
+            //Arange
+            Book book1 = new Book(new List<string>() { "Sarah Blædel"}, "Elnis død", "Politikens Forlag", 2022, 336);
+            Book book2 = new Book(new List<string>() { "Tine Høeg" }, "Sult", "Gutkind", 2022, 430);
+            Book book3 = new Book(new List<string>() { "Matt Haig" }, "The Midnight Libary", "Main", 2021, 304);
+            Book book4 = new Book(new List<string>() { "Jón Kalman Stefánsson" }, "Dit fravær er mørke", "Batzer & Co.", 2022, 576);
+            Book book5 = new Book(new List<string>() { "Paru Itagaki" }, "Beastars, Vol1", "Viz Media.", 2019, 208);
+
+
+            Shelf bookShelf1 = new Shelf(46, new List<ShelfSlot>()
+            {
+                new ShelfSlot(book5, 38), 
+                new ShelfSlot(book3, 85)
+            });
+            Shelf bookShelf2 = new Shelf(33, new List<ShelfSlot>()
+            {
+                new ShelfSlot(book1, 98),
+                new ShelfSlot(book2, 222),
+                new ShelfSlot(book4, 923)
+            });
+
+            Libary testLibary = new Libary(new List<Shelf>() { bookShelf1, bookShelf2 });
+
+
+            //Act
+            autoProffCase.Index result1 = testLibary.FindBooks("*20* & *Tine*");
+            autoProffCase.Index result2 = testLibary.FindBooks("*Beastars*");
+
+            //Assert
+            Assert.AreEqual(result1.shelveIdList.Contains(33), true, "The search did not return the right shelf");
+            Assert.AreEqual(result1.PlacedBooks.Count, 1, "Did not find all books in result 1");
+            Assert.AreEqual(result2.PlacedBooks[0].book.Title, book5.Title, "Book 5 was not found");
+
+        }
+
+        [TestMethod]
+        public void Insert_LibaryBooks()
+        {
+            //Arange
+            Book book1 = new Book(new List<string>() { "Sarah Blædel" }, "Elnis død", "Politikens Forlag", 2022, 336);
+            Book book2 = new Book(new List<string>() { "Tine Høeg" }, "Sult", "Gutkind", 2022, 430);
+            Book book3 = new Book(new List<string>() { "Matt Haig" }, "The Midnight Libary", "Main", 2021, 304);
+            Book book4 = new Book(new List<string>() { "Jón Kalman Stefánsson" }, "Dit fravær er mørke", "Batzer & Co.", 2022, 576);
+            Book book5 = new Book(new List<string>() { "Paru Itagaki" }, "Beastars, Vol1", "Viz Media.", 2019, 208);
+
+            Book book6 = new Book(new List<string>() { "Lars Findsen", "Mette Mayli Albæk" }, "Spionchefen - Erindringer fra celle 18", "Politikens Forlag.", 2022, 252);
+
+            Shelf bookShelf1 = new Shelf(46, new List<ShelfSlot>()
+            {
+                new ShelfSlot(book5, 38),
+                new ShelfSlot(book3, 85)
+            });
+            Shelf bookShelf2 = new Shelf(33, new List<ShelfSlot>()
+            {
+                new ShelfSlot(book1, 98),
+                new ShelfSlot(book2, 222),
+                new ShelfSlot(book4, 923)
+            });
+
+            Libary testLibary = new Libary(new List<Shelf>() { bookShelf1, bookShelf2 });
+
+
+            //Act
+            Shelf result = testLibary.InsertBooks(new List<ShelfSlot>()
+            {
+                new ShelfSlot(book6, 5879)
+            }, 46); ;
+
+            //Assert
+            Assert.AreEqual(result.shelfID, 46, "The search did not return the right shelf");
+            Assert.AreEqual(result.ShelfSlot.Count, 3, "Did not find all books in result 1");
+            Assert.AreEqual(result.ShelfSlot[2].book.Title, book6.Title, "Book 5 was not found");
 
         }
 
